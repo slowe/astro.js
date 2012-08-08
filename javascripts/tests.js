@@ -344,16 +344,16 @@ test("astro.ephem.js",function(){
 
 });
 
-test("astro.maths.js",function(){
+test("astro.math.js",function(){
 
-	equal(typeof astrojs.maths, "object", 'Does maths exist?')
-	var a = astrojs.maths.randomNormal();
-	console.log('randomNormal',astrojs.maths.randomNormal());
-	console.log('randomNormal',astrojs.maths.randomNormal());
-	console.log('randomNormal',astrojs.maths.randomNormal());
-	console.log('randomNormal',astrojs.maths.randomNormal());
-	console.log('randomNormal',astrojs.maths.randomNormal());
-	console.log('randomNormal',astrojs.maths.randomNormal());
+	equal(typeof astrojs.math, "object", 'Does math exist?')
+	var a = astrojs.math.randomNormal();
+	console.log('randomNormal',astrojs.math.randomNormal());
+	console.log('randomNormal',astrojs.math.randomNormal());
+	console.log('randomNormal',astrojs.math.randomNormal());
+	console.log('randomNormal',astrojs.math.randomNormal());
+	console.log('randomNormal',astrojs.math.randomNormal());
+	console.log('randomNormal',astrojs.math.randomNormal());
 	equal(typeof a,"number",'randomNormal returns a number');
 
 });
