@@ -62,10 +62,10 @@
 		this.T_sun = new Constant(5.780e3,-1,'Solar temperature','','K');
 
 		// OTHER SOLAR SYSTEM QUANTITIES
-		this.M_jup = new Constant(-1,-1,'Jupiter mass','','kg');
-		this.R_jup = new Constant(-1,-1,'Jupiter equatorial radius','','m');
-		this.M_earth = new Constant(-1,-1,'Earth mass','','kg');
-		this.R_earth = new Constant(-1,-1,'Earth equatorial radius','','m');
+		this.M_jup = new Constant(1.89850861164e+27,3.9768e20,'Jupiter mass','http://adsabs.harvard.edu/abs/2010ApJ...720L.201C','kg');
+		this.R_jup = new Constant(71492000,4000,'Jupiter equatorial radius','The Astronomical Almanac 2013','m');
+		this.M_earth = new Constant(5.9722e24,6e20,'Earth mass','The Astronomical Almanac 2013','kg');
+		this.R_earth = new Constant(6378136.6,0.1,'Earth equatorial radius','The Astronomical Almanac 2013','m');
 
 		return this;
 	}
