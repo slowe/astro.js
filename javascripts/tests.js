@@ -177,7 +177,7 @@ function almost_equal_degrees(actual,expected,precision,message){
 	//equal(parseFloat(actual.toFixed(precision)),parseFloat(expected.toFixed(precision)),'Residual: '+message+' difference '+((actual-expected)*3600).toFixed(2)+' arcseconds');
 }
 
-astrojs.importPackages(['example','dates','ephem','cosmology','coords','example2','maths'],{me:'tester',i:8},function(e){
+astrojs.importPackages(['example','dates','ephem','cosmology','coords','example2','math'],{me:'tester',i:8},function(e){
 
 	console.log( 'We should have loaded now');
 
