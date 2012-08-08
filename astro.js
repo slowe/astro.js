@@ -22,11 +22,19 @@
 
 (function(global){
 
+	// Get the base URL of this script - we'll use this for loading
+	var scripts = document.getElementsByTagName('script');
+	var script = scripts[scripts.length - 1];
+	if (script.getAttribute.length !== undefined) scriptsrc = script.src
+	else scriptsrc = script.getAttribute('src', -1);
+	scriptsrc = scriptsrc.substring(0,scriptsrc.lastIndexOf('/')+1)
+
 	var astrojs = {
 
 		version: '0.0.5',
 		// Some internal variables
 		astrojs: {
+			base: scriptsrc,
 			packages: [],
 			packagelookup: [],
 			toload: 0,
@@ -34,7 +42,7 @@
 				this.toload--;
 				this.ready();
 				//if(this.toload==0 && typeof this.ready.fn==="function") this.ready.fn()
-			}
+			},
 		},
 		ready: function(args,callback){
 
@@ -136,10 +144,9 @@
 			// Increment the loading packages counter
 			this.astrojs.toload++;
 
-
 			var js = document.createElement('script');
 			js.setAttribute('type', 'text/javascript');
-			js.setAttribute('src', loc);
+			js.setAttribute('src', (loc.indexOf('http://')!=0 ? this.astrojs.base : "") + loc);
 			js.onerror = function(){
 				astrojs.astrojs.loaded();
 			}
