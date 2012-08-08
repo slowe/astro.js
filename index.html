@@ -1,17 +1,28 @@
 <!DOCTYPE html>
 <html>
+<head>
+	<meta charset='utf-8' />
+	<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+	<meta name="description" content="Astro.js : A Javascript library for astronomy" />
+	<link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+	<link rel="stylesheet" href="stylesheets/qunit.css">
+	<link rel="stylesheet" href="stylesheets/prettify.css">
+	<script language="javascript" type="text/javascript" src="javascripts/jquery.min.js"></script>
+	<script language="javascript" type="text/javascript" src="https://raw.github.com/slowe/astro.js/master/astro.js"></script>
+	<script language="javascript" type="text/javascript" src="javascripts/prettify.js"></script>
+	<script language="javascript" type="text/javascript" src="javascripts/qunit.js"></script>
+	<script language="javascript" type="text/javascript" src="javascripts/tests.js"></script>
+	<script type="text/javascript">
 
-  <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Astro.js : A Javascript library for astronomy" />
+	$(document).ready(function() {
+		// Set up the prettification of code blocks
+		prettyPrint();
+	});
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Astro.js</title>
-  </head>
-
-  <body>
+	</script>
+	<title>Astro.js</title>
+</head>
+<body>
 
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
@@ -28,35 +39,201 @@
         </header>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>Welcome to GitHub Pages.</h3>
+	<!-- MAIN CONTENT -->
+	<div id="main_content_wrap" class="outer">
+		<section id="main_content" class="inner">
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+			<p><a href="#qunit">Unit tests</a> | <a href="#bench">Bench tests</a></p>
+			
+			<p><strong>This is the start of an idea and is subject to change</strong>. <a href="http://www.astrojs.org/">The plan</a> is to make a Javascript framework for astronomy analagous to <a href="https://github.com/astropy/astropy">astropy</a>. I've been playing about with making a core Javascript function that deals with package management: <code><a href="astro.js">astro.js</a></code>. The aim would be to keep this core small and a developer would only need to load the dependencies they needed rather than a massive library.</p>
+			<h2>Ethos</h2>
+			<ul>
+				<li>Small core package</li>
+				<li>Modular - only load the packages that are needed</li>
+				<li>Packages can be hosted remotely</li>
+				<li>Mulitple packages can be put into a single file to reduce request.</li>
+			</ul>
+			
+			<h2>Usage</h2>
+			<p><code>astro.js</code> creates a single global variable <code>astrojs</code>. The simplest way to include additional packages is with:</p>
+		
+			<pre class="prettyprint lang-js"><code>&lt;script language="javascript" type="text/javascript" src="astro.js"&gt;&lt;/script&gt;
+&lt;script language="javascript" type="text/javascript" src="astro.constants.js"&gt;&lt;/script&gt;
+&lt;script language="javascript" type="text/javascript" src="astro.dates.js"&gt;&lt;/script&gt;
+
+// As packages may require dependencies that load
+// asynchronously, we should wait for them
+astrojs.ready(function(e){
+
+	// Get the speed of light object
+	var c = astrojs.constants.c;
+
+	// Get the current Julian Date
+	var jd = astrojs.dates.getJulianDate();
+});
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+			<p>An alternative is to use:</p>
 
-<h3>Designer Templates</h3>
+			<pre class="prettyprint lang-js"><code>&lt;script language="javascript" type="text/javascript" src="astro.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+	
+// This expects astro.constants.js and astro.dates.js to be in the same directory
+astrojs.importPackages( ['constants', 'dates'], { me:'tester', i:8 }, function(e){
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+	// This is the function that gets called when things are complete
 
-<h3>Rather Drive Stick?</h3>
+});
+&lt;/script&gt;
+</code></pre>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+			<p>The formats of these two methods:</p>
+			
+				<pre class="prettyprint lang-js"><code>astrojs.ready( [eventData, ] callback );
 
-<h3>Authors and Contributors</h3>
+astrojs.importPackages( packageArray [, eventData] [, callback] );
+</code></pre>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+			<p>In the callback function we can then access the packages...</p>
+		
+			<pre class="prettyprint lang-js"><code>// This expects astro.constants.js, astro.dates.js, astro.coords.js
+astrojs.importPackages( ['constants', 'dates', 'coords'], { me:'tester', i:8 }, function(e){
 
-<h3>Support or Contact</h3>
+	// First let's check that we get the eventData
+	console.log(e.data.me);           // <- print "tester" to the console	
+	console.log(e.data.i);            // <- print 8 to the console
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+
+	// astro.constants.js - Each constant is an object containing value, error, name, origin, units
+
+	// Get the SI value for the speed of light
+	var c = astrojs.constants.c.value;
+
+	// We can get a formatted string of the unit properties
+	var c_string = astrojs.constants.c.toString();
+
+
+	// astro.dates.js - Functions to manipulate astronomical dates and times
+
+	// Get the Julian Date for now
+	var jd = astrojs.dates.getJulianDate();
+	console.log(jd);                  // <- print the Julian Date to the console
+	
+	// Return the Julian Date for March 21st 2012 (GMT)
+	jd = astrojs.dates.getJulianDate(new Date('March 21, 2012 00:00:00 +00:00'));	
+	console.log(jd);
+
+
+	// astro.coords.js - Functions to manipulate astronomical coordinates
+
+	// Coordinates for the LMC
+	var l = 280.4652;
+	var b = -32.8884;
+	var ra = 80.8941708;
+	var dec = -69.7561111;
+	var ra_b1950 = 15.*(5.+(24./60));
+	var dec_b1950 = -(69.+(48./60));
+
+	// Convert from RA/Dec (J2000) to Galactic
+	var coord = astrojs.coords.equatorial2galactic(ra,dec);
+	// Returns an object { l: value, b: value }
+
+	// Convert from RA/Dec (B1950) to Galactic
+	var coord = astrojs.coords.equatorial2galactic(ra_b1950,dec_b1950,"B1950");
+	// Returns an object { l: value, b: value }
+
+	// Convert from Galactic to RA/Dec (J2000)
+	var coord = astrojs.coords.galactic2equatorial(l,b);
+	// Returns an object { ra: value, dec: value }
+
+	// Convert from Galactic to RA/Dec (B1950)
+	var coord = astrojs.coords.galactic2equatorial(l,b,"B1950");
+	// Returns an object { ra: value, dec: value }
+
+	// Convert from B1950 to J2000
+	var coord = astrojs.coords.fk42fk5(ra_b1950,dec_b1950);
+	// Returns an object { ra: value, dec: value }
+
+	// Convert from J2000 to B1950
+	var coord = astrojs.coords.fk52fk4(ra,dec);
+	// Returns an object { ra: value, dec: value }
+
+});
+</code></pre>
+
+	<h2>Example package</h2>
+ 	<p><code>astrojs.importPackages()</code> will load each package and their dependencies asynchronously. Once each package (with dependencies) has loaded, the package's <code>init()</code> function is called.</p>
+
+	<pre class="prettyprint lang-js"><code>/*
+	astro.example.js - a very simple example
+
+*/
+(function () {
+
+	// Define any dependencies that are required for this package to run
+	var dependencies = ['constants'];
+	
+	// Create the main function
+	function init(astrojs) {
+
+		// An internal variable
+		var message = "Hello Universe!";
+
+		// A variable that can be accessed from outside this package
+		this.pi = 3.141;
+
+		// An internal function
+		function helper(){
+			return message;
+		}
+
+		// A function that can be accessed from outside this package
+		this.hello = function(){
+			return helper();
+		}
+		return this;
+	}
+
+	// Register the package with the core
+	astrojs.registerPackage({
+		init: init,
+		dependencies: dependencies,
+		name: 'example',
+		version: '0.0.1'
+	});
+	
+})(astrojs);
+
+// Once loaded you can call the package's public functions e.g.
+console.log(astrojs.example.hello());
+
+// ... and you can see their public variables;
+console.log(astrojs.example.pi);
+</code></pre>
+	
+	<p>Some example packages (work in progress):</p>
+	<ul>
+		<li><a href="https://raw.github.com/slowe/astro.js/master/astro.js">astro.js</a> - the core package.</li>
+		<li><a href="https://raw.github.com/slowe/astro.js/master/astro.example.js">astro.example.js</a> - a very basic example package to extend the core</li>
+		<li><a href="https://raw.github.com/slowe/astro.js/master/astro.constants.js">astro.constants.js</a> - some constants</li>
+		<li><a href="https://raw.github.com/slowe/astro.js/master/astro.coords.js">astro.coords.js</a></li>
+		<li><a href="https://raw.github.com/slowe/astro.js/master/astro.dates.js">astro.dates.js</a></li>
+		<li><a href="https://raw.github.com/slowe/astro.js/master/astro.ephem.js">astro.ephem.js</a></li>
+		<li><a href="https://raw.github.com/slowe/astro.js/master/astro.cosmology.js">astro.cosmology.js</a></li>
+	</ul>
+
+	<h2>Unit Tests (using QUnit)</h2>
+	<div id="qunit"></div>
+	<div id="qunit-fixture"></div>
+
+	<h2>Bench Tests</h2>
+	<p>These represent the performance on your computer. To reduce the chance of Javascript-engine caching, each loop uses an array of <em>n</em> random values (rather than the same value <em>n</em> times).</p>
+	<div id="bench"></div>
+
+
+
+
       </section>
     </div>
 
