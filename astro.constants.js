@@ -56,9 +56,9 @@
 		this.yr = new Constant(31557600,0,'Year','','s');
 
 		// SOLAR QUANTITIES
-		this.M_sun = new Constant(1.99e30,-1,'Solar mass','','kg'); // Solar mass in kilograms
-		this.R_sun = new Constant(6.96e8,-1,'Solar radius','','m'); // Solar radius in meters
-		this.L_sun = new Constant(3.9e26,-1,'Solar luminosity','','J/s');
+		this.M_sun = new Constant(1.9884e30,2e26,'Solar mass','The Astronomical Almanac 2013','kg'); // Solar mass in kilograms
+		this.R_sun = new Constant(696000000,0,'Solar radius','The Astronomical Almanac 2013','m'); // Solar radius in meters
+		this.L_sun = new Constant(3.839e26,-1,'Solar luminosity','','J/s');
 		this.T_sun = new Constant(5.780e3,-1,'Solar temperature','','K');
 
 		// OTHER SOLAR SYSTEM QUANTITIES
