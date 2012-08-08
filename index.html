@@ -46,7 +46,7 @@
 
 			<p><a href="#qunit">Unit tests</a> | <a href="#bench">Bench tests</a></p>
 			
-			<p><strong>This is the start of an idea and is subject to change</strong>. <a href="http://www.astrojs.org/">The plan</a> is to make a Javascript framework for astronomy analagous to <a href="https://github.com/astropy/astropy">astropy</a>. I've been playing about with making a core Javascript function that deals with package management: <code><a href="astro.js">astro.js</a></code>. The aim would be to keep this core small and a developer would only need to load the dependencies they needed rather than a massive library.</p>
+			<p>The plan is to make a Javascript framework for astronomy analagous to <a href="https://github.com/astropy/astropy">astropy</a>. As a start I've made a core Javascript function that deals with package management: astro.js. The aim is to keep this core small and people who make use of the library only need to load the dependencies they need rather than a massive library. I will try to mirror the structure of astropy where possible.</p>
 			<h2>Ethos</h2>
 			<ul>
 				<li>Small core package</li>
@@ -98,7 +98,7 @@ astrojs.importPackages( packageArray [, eventData] [, callback] );
 			<p>In the callback function we can then access the packages...</p>
 		
 			<pre class="prettyprint lang-js"><code>// This expects astro.constants.js, astro.dates.js, astro.coords.js
-astrojs.importPackages( ['constants', 'dates', 'coords'], { me:'tester', i:8 }, function(e){
+astrojs.importPackages( ['constants', 'dates', 'coords'], { me: 'tester', i: 8 }, function(e){
 
 	// First let's check that we get the eventData
 	console.log(e.data.me);           // <- print "tester" to the console	
