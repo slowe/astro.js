@@ -31,7 +31,7 @@
 
 	var astrojs = {
 
-		version: '0.0.6',
+		version: '0.0.7',
 		// Some internal variables
 		astrojs: {
 			base: src,
@@ -40,8 +40,7 @@
 			toload: 0,
 			loaded: function(){
 				this.toload--;
-				this.ready();
-				//if(this.toload==0 && typeof this.ready.fn==="function") this.ready.fn()
+				astrojs.ready();
 			}
 		},
 		ready: function(args,callback){
@@ -51,58 +50,65 @@
 			// We must wait until the document is ready before doing
 			// anything otherwise function calls could fire out of 
 			// order. This code from jQuery:
-			if(this.astrojs.readyBound) return this;
-			this.astrojs.readyBound = true;
-
-			// Mozilla, Opera and webkit nightlies currently support this event
-			if(document.addEventListener) {
-				// Use the handy event callback
-				document.addEventListener( "DOMContentLoaded", function(){
-					document.removeEventListener( "DOMContentLoaded", arguments.callee, false );
-					astrojs.readyGo();
-				}, false);
-			
-			// If IE event model is used
-			}else if(document.attachEvent){
-				// ensure firing before onload,
-				// maybe late but safe also for iframes
-				document.attachEvent("onreadystatechange", function(){
-					if ( document.readyState === "complete" ) {
-						document.detachEvent( "onreadystatechange", arguments.callee );
+			if(!this.astrojs.readyBound){
+				this.astrojs.readyBound = true;
+	
+				// Mozilla, Opera and webkit nightlies currently support this event
+				if(document.addEventListener) {
+					// Use the handy event callback
+					document.addEventListener( "DOMContentLoaded", function(){
+						document.removeEventListener( "DOMContentLoaded", arguments.callee, false );
 						astrojs.readyGo();
-					}
-				});
-			
-				// If IE and not an iframe
-				// continually check to see if the document is ready
-				if ( document.documentElement.doScroll && window == window.top ) (function(){
-					if ( jQuery.isReady ) return;
-					try {
-						// If IE is used, use the trick by Diego Perini
-						// http://javascript.nwbox.com/IEContentLoaded/
-						document.documentElement.doScroll("left");
-					} catch( error ) {
-						setTimeout( arguments.callee, 0 );
-						return;
-					}
+					}, false);
 				
-					// and execute any waiting functions
-					astrojs.readyGo();
-				})();
+				// If IE event model is used
+				}else if(document.attachEvent){
+					// ensure firing before onload,
+					// maybe late but safe also for iframes
+					document.attachEvent("onreadystatechange", function(){
+						if ( document.readyState === "complete" ) {
+							document.detachEvent( "onreadystatechange", arguments.callee );
+							astrojs.readyGo();
+						}
+					});
+				
+					// If IE and not an iframe
+					// continually check to see if the document is ready
+					if ( document.documentElement.doScroll && window == window.top ) (function(){
+						if ( jQuery.isReady ) return;
+						try {
+							// If IE is used, use the trick by Diego Perini
+							// http://javascript.nwbox.com/IEContentLoaded/
+							document.documentElement.doScroll("left");
+						} catch( error ) {
+							setTimeout( arguments.callee, 0 );
+							return;
+						}
+					
+						// and execute any waiting functions
+						astrojs.readyGo();
+					})();
+				}else{
+					// A fallback to window.onload
+					window.onload = astrojs.readyGo;
+				}
 			}
-				
-			// A fallback to window.onload, that will always work
-			//jQuery.event.add( window, "load", jQuery.ready );
+
+			if(this.astrojs.toload==0) this.readyGo();
 
 			return this;
 		},
 		readyGo: function(){
-			if(this.astrojs.ready && typeof this.astrojs.ready.fn==="function"){
-				this.astrojs.ready.fn();
-				this.astrojs.ready.fn = "";
+			if(this.astrojs.toload==0 && this.astrojs.ready && typeof this.astrojs.ready.fn==="function"){
+				var fn = this.astrojs.ready.fn;
+				this.astrojs.ready.fn = -1;
+				fn.call();
 			}
 		},
 		setReady: function(args,callback){
+
+			if(typeof callback==="undefined" && typeof args==="undefined") return;
+
 			if(!callback && typeof args==="function"){
 				callback = args;
 				args = {};
@@ -207,7 +213,7 @@
 
 			if(ok){
 
-				if(console && typeof console.log==="function") console.log('Registering astro.'+inp.name);
+				if(console && typeof console.log==="function") console.log('Registering astro.'+inp.name+'.js');
 				
 
 				// Push the details of the package somewhere
