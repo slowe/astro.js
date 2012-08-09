@@ -59,7 +59,37 @@
 			psi = Math.asin(w[2]);
 			return {az:theta/d2r,el:psi/d2r}
 		}
+
+/*
+		// compute horizon coordinates from utc, ra, dec
+		// ra, dec, lat, lon in decimal degrees
+		// utc is a Date object
+		// results returned in hrz_altitude, hrz_azimuth
+		this.radec2azel = function(ra, dec, lat, lon, UTC, LST){
+			// compute hour angle in degrees
+			if(typeof LST==="undefined") LST = astrojs.dates.getLST(UTC,lon);
+			var ha = LST*15 - ra;
+			if (ha < 0) ha += 360;
+			// convert degrees to radians
+			ha *= this.d2r;
+			dec *= this.d2r;
+			// Fudge to fix divide by zero error at poles
+			// Convert to radians
+			lat = ((Math.abs(lat) == 90.0) ? (lat-0.00001) : lat)*this.d2r;
+			// compute altitude in radians
+			var alt = Math.asin(Math.sin(dec)*Math.sin(lat) + Math.cos(dec)*Math.cos(lat)*Math.cos(ha));
+			// compute azimuth in radians
+			// divide by zero error at poles or if alt = 90 deg
+			var az  = Math.acos((Math.sin(dec) - Math.sin(alt)*Math.sin(lat))/(Math.cos(alt)*Math.cos(lat)));
+			// convert radians to degrees
+			var hrz_altitude = alt/this.d2r;
+			var hrz_azimuth  = az/this.d2r;
+			// choose hemisphere
+			if (Math.sin(ha) > 0) hrz_azimuth = 360 - hrz_azimuth;
+			return {alt: hrz_altitude, az: hrz_azimuth};
+		}*/
 		
+
 		// Take input in decimal degrees
 		this.ecliptic2radec = function(l,b,JD){
 			var e,sl,cl,sb,cb,tb,se,ce,ra,dec;
