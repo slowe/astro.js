@@ -36,7 +36,6 @@
 			var _arg = eventData;
 			var _call = callback;
 			this.fns[fname] = function(d){
-			console.log('callback',d)
 				d = _obj.results(d);
 				_call.call(astrojs,{result:d,data:_arg});
 			}
