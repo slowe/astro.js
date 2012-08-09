@@ -177,9 +177,23 @@ function almost_equal_degrees(actual,expected,precision,message){
 	//equal(parseFloat(actual.toFixed(precision)),parseFloat(expected.toFixed(precision)),'Residual: '+message+' difference '+((actual-expected)*3600).toFixed(2)+' arcseconds');
 }
 
-astrojs.importPackages(['example','dates','ephem','cosmology','coords','example2','math'],{me:'tester',i:8},function(e){
+astrojs.importPackages(['example','dates','ephem','cosmology','coords','example2','lookup','math'],{me:'tester',i:8},function(e){
 
 	console.log( 'We should have loaded now');
+
+
+	var edata = {test:1234};
+	astrojs.lookup.find("M31",edata,function(e){
+	
+		test("astro.lookup.js results",function(){
+			equal(e.data, edata, 'The event data get passed through')
+			equal(typeof e.result, "object", 'Do results exist?')
+			equal(e.result.target.name, "M31", 'Found M31')
+			almost_equal(e.result.ra.decimal, 10.6847083, 4, 'Has an RA')
+		
+		});
+	});
+	
 
 
 	// Will print "tester" to the console
