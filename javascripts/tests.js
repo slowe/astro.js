@@ -177,7 +177,7 @@ function almost_equal_degrees(actual,expected,precision,message){
 	//equal(parseFloat(actual.toFixed(precision)),parseFloat(expected.toFixed(precision)),'Residual: '+message+' difference '+((actual-expected)*3600).toFixed(2)+' arcseconds');
 }
 
-astrojs.importPackages(['example','dates','ephem','cosmology','coords','example2','lookup','math'],{me:'tester',i:8},function(e){
+astrojs.importPackages(['example','dates','ephem','cosmology','coordinates','coords','example2','lookup','math'],{me:'tester',i:8},function(e){
 
 	console.log( 'We should have loaded now');
 
@@ -242,6 +242,164 @@ test("astro.constants.js",function(){
 	equal(typeof astrojs.constants, "object", 'Do constants exist?');
 	equal(astrojs.constants.c.value, 2.99792458e8, 'Speed of light');
 
+});
+
+test("astro.coordinates.js",function(){
+
+	equal(typeof astrojs.coordinates, "object", 'Does coordinates exist?')
+
+	// Sirius
+	var l = 227.228206;
+	var b = -8.887735;
+	var ra = 101.288541;
+	var dec = -16.713143;
+
+
+	var a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11;
+	
+	a1 = astrojs.coordinates.Angle(13343,{ unit: "DEGREE" });
+	equal( a1.degrees, 23, 'Check that Angle (13343) is returned as 23');
+
+	a2 = astrojs.coordinates.Angle(-50, { unit: "DEGREE" });
+	equal( a2.degrees, -50, 'Check that Angle (-50 degrees) is returned as -50');
+
+
+	a3 = astrojs.coordinates.Angle(-361, { unit: "DEGREE" })
+	equal( a3.degrees, -1, 'Check that Angle (-361 degrees) is returned as -1');
+	
+	// custom bounds
+	
+	a4 = astrojs.coordinates.Angle(66, { unit: "DEGREE", bounds: [-45,45] });
+	equal( a4.error, "RangeError", 'Check that Angle (66 degrees in bounds -45 to 45) is returned with "RangeError"');
+	// RangeError
+	
+	a5 = astrojs.coordinates.Angle(390, { unit: "DEGREE", bounds: [-75,75] })
+	equal( a5.degrees, 30, 'Check that Angle (390 degrees in bounds -75 to 75) is returned as 30');
+	// 30, no RangeError because while 390>75, 30 is within the bounds
+	
+	a6 = astrojs.coordinates.Angle(390, { unit: "DEGREE", bounds: [-720,720] })
+	equal( a6.degrees, 390, 'Check that Angle (390 degrees in bounds -720 to 720) is returned as 390');
+	// 390
+	
+	a7 = astrojs.coordinates.Angle(1020, { unit: "DEGREE", bounds: null })
+	equal( a7.degrees, 1020, 'Check that Angle (1020 degrees in null bounds) is returned as 1020');
+	
+	//a8 = a5 + a6;
+	//console.log(a8)
+	//equal( a8, undefined, 'the bounds don\'t match');
+
+	var ra,dec,dec2,l,b;
+	ra = astrojs.coordinates.RA("4:08:15.162342");
+	equal( ra.error, undefined, 'undefined - hours or degrees?');
+	
+	ra = astrojs.coordinates.RA("26:34:65.345634");
+	almost_equal( ra.degrees, 26.58482, 4, 'unambiguous degree input to RA()');
+
+	ra = astrojs.coordinates.RA("4:08:15.162342", { unit: "HOUR" });
+	almost_equal( ra.degrees, 62.06318, 4, 'Units can be specified');
+
+
+	// Where RA values are commonly found in hours or degrees, declination is nearly always
+	// specified in degrees, so this is the default.
+	dec = astrojs.coordinates.Dec("-41:08:15.162342");
+	almost_equal( dec.degrees, -41.13755, 4, 'Declination defined');
+	dec2 = astrojs.coordinates.Dec("-41:08:15.162342", { unit: "DEGREE" }) // same as above
+	equal( dec.degrees, dec2.degrees, 'Declination the same when defined with units');
+
+
+	var c = astrojs.coordinates.ICRSCoordinate(ra, dec) //ra and dec are RA and Dec objects, or Angle objects
+	equal( c.constructor.name, "ICRSCoordinate", 'ICRSCoordinate type');
+	equal( c.ra.constructor.name, "RA", 'ICRS contains RA');
+	equal( c.dec.constructor.name, "Dec", 'ICRS contains Dec');
+
+	c = astrojs.coordinates.ICRSCoordinate("54.12412 deg", "-41:08:15.162342");
+	almost_equal( c.dec.degrees, -41.13755, 4, 'ICRS Declination matches');
+
+
+	c = astrojs.coordinates.ICRSCoordinate('4 23 43.43  +23 45 12.324');
+	equal( c.errors.length, 1, 'ICRS uses single, ambiguous string input with no units specified');
+
+	c = astrojs.coordinates.ICRSCoordinate('4 23 43.43  +23 45 12.324', { unit: ["HOUR"] });
+	almost_equal( c.dec.degrees, 23.75342, 4, 'ICRS takes single string input with only first unit specified');
+
+	c = astrojs.coordinates.ICRSCoordinate('4 23 43.43  +23 45 12.324', { unit: ["DEGREE","DEGREE"] });
+	almost_equal( c.dec.degrees, 23.75342, 4, 'ICRS takes single string input with both units specified');
+
+	l = 280.4652;
+	b = -32.8884;
+	ra = 80.8941708;
+	dec = -69.7561111;
+	
+	var ra_b1950 = 15.*(5.+(24./60));
+	var dec_b1950 = -(69.+(48./60));
+
+	// Other types of coordinate systems have their own classes
+	c = astrojs.coordinates.GalacticCoordinates(l, b) // this only accepts Angles, *not* RA and Dec objects
+
+	equal( c.l.degrees, l, 'Check that GalacticCoordinates longitude (degrees) is the same as input');
+	equal( c.b.degrees, b, 'Check that GalacticCoordinates latitude (degrees) is the same as input');
+
+
+	c = astrojs.coordinates.Coordinate({ra: ra, dec:dec });
+	console.log(c)
+	equal( c.constructor.name, "ICRSCoordinate", 'Coordinate with Ra/Dec returns ICRSCoordinate type');
+
+/*
+	var coord = astrojs.coordinates.RA(101.288541);
+	equal( coord.degrees, ra, 'Check that RA (degrees) is the same as input');
+	equal( coord.hours, ra/15, 'Check that RA (hours) is the same as input');
+
+	var coord = astrojs.coordinates.RA(101.288541);
+	equal( coord.degrees, ra, 'Check that RA (degrees) is the same as input');
+	equal( coord.hours, ra/15, 'Check that RA (hours) is the same as input');
+	
+	var gal = astrojs.coordinates.GalacticCoordinate(l,b);
+
+console.log('Here',gal,gal.toString());	
+	almost_equal_degrees( coord.ra, ra, 1,'Right Ascenscion of Sirius');
+	almost_equal_degrees( coord.dec, dec, 1, 'Declination of Sirius');
+
+	var coord = astrojs.coords.equatorial2galactic(ra,dec);
+
+	almost_equal_degrees( coord.l, l,'Galactic longitude of LMC (equatorial2galactic)');
+	almost_equal_degrees( coord.b, b, 'Galactic latitude of LMC (equatorial2galactic)');
+
+	var coord = astrojs.coords.equatorial2galactic(ra_b1950,dec_b1950,"1950");
+
+	almost_equal_degrees( coord.l, l,'Galactic longitude of LMC (equatorial2galactic B1950)');
+	almost_equal_degrees( coord.b, b, 'Galactic latitude of LMC (equatorial2galactic B1950)');
+
+	var coord = astrojs.coords.galactic2equatorial(l,b);
+
+	almost_equal_degrees( coord.ra, ra,'RA of LMC (galactic2equatorial)');
+	almost_equal_degrees( coord.dec, dec, 'Dec of LMC (galactic2equatorial)');
+
+	var coord = astrojs.coords.galactic2equatorial(l,b,"1950");
+
+	almost_equal_degrees( coord.ra, ra_b1950,'RA of LMC (galactic2equatorial B1950)');
+	almost_equal_degrees( coord.dec, dec_b1950, 'Dec of LMC (galactic2equatorial B1950)');
+
+	var coord = astrojs.coords.eq2gal(ra,dec);
+
+	almost_equal_degrees( coord.l, l,'Galactic longitude of LMC (eq2gal)');
+	almost_equal_degrees( coord.b, b, 'Galactic latitude of LMC (eq2gal)');
+
+	var coord = astrojs.coords.eq2gal(ra_b1950,dec_b1950,"1950");
+
+	almost_equal_degrees( coord.l, l,'Galactic longitude of LMC (eq2gal B1950)');
+	almost_equal_degrees( coord.b, b, 'Galactic latitude of LMC (eq2gal B1950)');
+
+	var coord = astrojs.coords.gal2eq(l,b);
+
+	almost_equal_degrees( coord.ra, ra,'RA of LMC (gal2eq)');
+	almost_equal_degrees( coord.dec, dec, 'Dec of LMC (gal2eq)');
+
+	var coord = astrojs.coords.gal2eq(l,b,"1950");
+
+	almost_equal_degrees( coord.ra, ra_b1950,'RA of LMC (gal2eq B1950)');
+	almost_equal_degrees( coord.dec, dec_b1950, 'Dec of LMC (gal2eq B1950)');
+
+*/
 });
 
 test("astro.coords.js",function(){
