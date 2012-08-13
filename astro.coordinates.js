@@ -193,21 +193,33 @@
 
 		function ICRSCoordinate(ra,dec,opts){
 
-			var units = (opts && opts.unit) ? ((typeof opts.unit==="string") ? [opts.unit,opts.unit] : (opts.unit.length>=2 ? [opts.unit[0],opts.unit[1]] : [opts.unit[0],opts.unit[0]])) : ["DEGREE","DEGREE"];
 			if(typeof ra==="string" && typeof dec==="object" && dec.unit){
-				// Input: a single string containing RA and Dec separated by a double space
-				var p = ra.split('  ');
-				if(p.length == 2){
-					ra = new RA(p[0],{ unit: (dec.unit.length==1) ? dec.unit[0] : dec.unit[0]});
-					dec = new Dec(p[1],{ unit: (dec.unit.length==1) ? dec.unit[0] : dec.unit[1]});
-				}
-			} // Otherwise we'll assume ra and dec are values that can be parsed
+				opts = dec;
+				dec = null;
+			}
 
-			if(!(ra instanceof RA)) ra = new RA(ra,{unit:units[0]});
-			if(!(dec instanceof Dec)) dec = new Dec(dec,{unit:units[1]});
+			var units = parseUnits(opts,["","DEGREE"]);
 
 			this.ra = ra;
 			this.dec = dec;
+
+			if(typeof ra==="string" && typeof dec!=="string" && ra.indexOf('  ') > 0){
+				// Input: a single string containing RA and Dec separated by a double space
+				var p = ra.split('  ');
+
+				if(p.length == 2){
+					this.ra = new RA(p[0],{ unit: units[0]});
+					this.dec = new Dec(p[1],{ unit: units[1]});
+				}
+			} // Otherwise we'll assume ra and dec are values that can be parsed
+
+			if(!(this.ra instanceof RA)) this.ra = new RA(this.ra,{unit:units[0]});
+			if(!(this.dec instanceof Dec)) this.dec = new Dec(this.dec,{unit:units[1]});
+
+			this.errors = [];
+			if(this.ra.errors) this.errors.push(this.ra.errors);
+			if(this.dec.errors) this.errors.push(this.dec.errors);
+			
 			return this;
 		}
 		ICRSCoordinate.prototype.galactic = function(){
@@ -218,7 +230,7 @@
 			return this;
 		}
 		function GalacticCoordinate(l,b,opts){
-			var units = (opts && opts.unit) ? ((typeof opts.unit==="string") ? [opts.unit,opts.unit] : (opts.unit.length>=2 ? [opts.unit[0],opts.unit[1]] : [opts.unit[0],opts.unit[0]])) : ["DEGREE","DEGREE"];
+			var units = parseUnits(opts,["DEGREE","DEGREE"]);
 
 			this.l = new Angle(l,{unit:units[0]});
 			this.b = new Angle(b,{unit:units[1]});
@@ -232,9 +244,13 @@
 			console.log(e)
 			return new ICRSCoordinate(e.ra,e.dec,'DEGREE');
 		}
+		function parseUnits(u,backup){
+			if(!backup) backup = ["","DEGREE"];
+			return (u && u.unit) ? ((typeof u.unit==="string") ? [u.unit,u.unit] : (u.unit.length >= 2 ? [u.unit[0],u.unit[1]] : [u.unit[0],"DEGREE"])) : backup;
+		}
 		function Coordinate(inp){
 			if(typeof inp!=="object") return -1;
-			var units = (inp.unit) ? ((typeof inp.unit==="string") ? [inp.unit,inp.unit] : (inp.unit.length>=2 ? [inp.unit[0],inp.unit[1]] : [inp.unit[0],inp.unit[0]])) : "";
+			var units = parseUnits(inp,["",""]); 
 
 			//c = Coordinate(a1=139.686111, a2=4.875278, unit=u.DEGREE, system=GALACTIC)
 			if(inp.a1 && inp.a2 && typeof inp.system==="string"){
@@ -258,11 +274,11 @@
 
 		}
 		this.ICRSCoordinate = function(ra,dec){ return new ICRSCoordinate(ra,dec); }
-		this.GalacticCoordinate = function(l,b,opts){
+		this.GalacticCoordinates = function(l,b,opts){
 			if((typeof l==="number" || typeof l==="string") && (typeof b==="number" || typeof b==="string")) return new GalacticCoordinate(l,b,opts);
 			return { message: "Error: only accepts Angles as numbers or strings" };
 		}
-		this.Coordinate = function(inp){ return new Coordinate(inp); }
+		this.Coordinate = function(inp){ return Coordinate(inp); }
 
 		
 		// Input is Julian Date
