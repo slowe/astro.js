@@ -51,7 +51,7 @@
 			var min = parseFloat(bits[1]);
 			var sec = parseFloat(bits[2]);
 			if(sec < 0.000001) sec = 0;
-			t = sign*(deg + min/60 + sec/3600);
+			var t = sign*(deg + min/60 + sec/3600);
 			return { degrees: t, dms: [deg, min, sec], string: inp };
 		}
 
