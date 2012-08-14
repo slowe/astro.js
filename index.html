@@ -80,11 +80,7 @@
 // asynchronously, we should wait for them
 astrojs.ready(function(e){
 
-	// Get the speed of light object
-	var c = astrojs.constants.c;
 
-	// Get the current Julian Date
-	var jd = astrojs.dates.getJulianDate();
 });
 </code></pre>
 
@@ -94,9 +90,8 @@ astrojs.ready(function(e){
 &lt;script type="text/javascript"&gt;
 	
 // This expects astro.constants.js and astro.dates.js to be in the same directory
-astrojs.importPackages( ['constants', 'dates'], { me:'tester', i:8 }, function(e){
+astrojs.importPackages( ['constants', 'dates'], { me: 'tester', i: 8 }, function(e){
 
-	// This is the function that gets called when things are complete
 
 });
 &lt;/script&gt;
