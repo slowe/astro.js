@@ -1,5 +1,5 @@
 /*
-	astro.coords.js - basic coordinate transforms
+	astro.coordinates.js - coordinates and transforms transforms
 
 */
 (function () {
