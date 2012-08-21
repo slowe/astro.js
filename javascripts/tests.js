@@ -479,6 +479,7 @@ test("astro.cosmology.js",function(){
 test("astro.dates.js",function(){
 	equal(typeof astrojs.dates, "object", 'Date functions')
 	almost_equal(astrojs.dates.getJulianDate('December 25, 1990 19:30:00 +00:00'), 2448251.3125, 'Using a correctly formatted date string')
+	almost_equal(astrojs.dates.getJulianDate('June 19, 2009 18:00:00 +00:00'), 2455002.25, 'Using a correctly formatted date string')
 	almost_equal(astrojs.dates.getJulianDate(new Date('December 25, 1990 19:30:00 +00:00')), 2448251.3125, 'Using a Javascript Date() object')
 	almost_equal(astrojs.dates.getJulianDate(new Date('April 1, 1993 GMT')), 2449078.5, 'Using a Javascript Date() just with month, day year and timezone')
 	almost_equal(astrojs.dates.getJulianDate(new Date(1342018666659)), 2456120.12345670, 7,'Using a Javascript Date() object set with milliseconds')
